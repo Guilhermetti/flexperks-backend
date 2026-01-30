@@ -1,7 +1,10 @@
 ﻿using FlexPerks.Api.Auth;
+using FlexPerks.Application.Handlers.Auth;
 using FlexPerks.Application.Interfaces;
+using FlexPerks.Application.Options;
 using FlexPerks.Infrastructure.Data;
 using FlexPerks.Infrastructure.Repositories;
+using FlexPerks.Infrastructure.Security;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
@@ -39,6 +42,11 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
 });
 
 // 2.2. Application & Infrastructure services
+builder.Services.Configure<JwtOptions>(builder.Configuration.GetSection("Jwt"));
+
+builder.Services.AddSingleton<ITokenService, JwtTokenService>();
+builder.Services.AddScoped<LoginHandler>();
+
 builder.Services.AddScoped(typeof(IAsyncRepository<>), typeof(GenericRepository<>));
 builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddScoped<ICompanyRepository, CompanyRepository>();
@@ -48,7 +56,6 @@ builder.Services.AddScoped<IPerkTransactionRepository, PerkTransactionRepository
 builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 
 // 2.3. Authentication (JWT)
-
 var jwt = builder.Configuration.GetSection("Jwt");
 var key = jwt.GetValue<string>("Key");
 var issuer = jwt.GetValue<string>("Issuer");

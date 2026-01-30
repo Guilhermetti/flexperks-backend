@@ -5,12 +5,13 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Handlers\" />
+    <PackageReference Include="BCrypt.Net-Next" Version="4.0.3" />
+    <PackageReference Include="Flunt" Version="2.0.5" />
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="BCrypt.Net-Next" Version="4.0.3" />
-    <PackageReference Include="Flunt" Version="2.0.5" />
+    <Folder Include="Commands\Users\" />
+    <Folder Include="Handlers\Users\" />
   </ItemGroup>
 
   <PropertyGroup>

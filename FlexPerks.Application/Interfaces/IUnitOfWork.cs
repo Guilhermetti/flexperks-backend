@@ -1,7 +1,4 @@
-﻿using System.Threading;
-using System.Threading.Tasks;
-
-namespace FlexPerks.Application.Interfaces
+﻿namespace FlexPerks.Application.Interfaces
 {
     public interface IUnitOfWork
     {
