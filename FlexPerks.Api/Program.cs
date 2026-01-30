@@ -1,6 +1,8 @@
-﻿using FlexPerks.Application.Interfaces;
+﻿using FlexPerks.Api.Auth;
+using FlexPerks.Application.Interfaces;
 using FlexPerks.Infrastructure.Data;
 using FlexPerks.Infrastructure.Repositories;
+using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.EntityFrameworkCore;
@@ -8,7 +10,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.IdentityModel.Tokens;
-using Microsoft.OpenApi.Models;
+using Microsoft.OpenApi;
 using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -20,12 +22,21 @@ builder.Configuration
 
 // 1. Configuration
 var configuration = builder.Configuration;
+var flags = configuration.GetSection("FeatureFlags");
+var useInMemory = flags.GetValue<bool>("UseInMemoryDb");
+var disableAuth = flags.GetValue<bool>("DisableAuth");
+var seedDemo = flags.GetValue<bool>("SeedDemoData");
 var jwtSettings = configuration.GetSection("Jwt");
 
 // 2. Services
 // 2.1. Entity Framework DbContext
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
-    options.UseSqlServer(configuration.GetConnectionString("DefaultConnection")));
+{
+    if (useInMemory)
+        options.UseInMemoryDatabase("FlexPerksDev");
+    else
+        options.UseSqlServer(configuration.GetConnectionString("DefaultConnection"));
+});
 
 // 2.2. Application & Infrastructure services
 builder.Services.AddScoped(typeof(IAsyncRepository<>), typeof(GenericRepository<>));
@@ -43,24 +54,34 @@ var key = jwt.GetValue<string>("Key");
 var issuer = jwt.GetValue<string>("Issuer");
 var audience = jwt.GetValue<string>("Audience");
 
-builder.Services.AddAuthentication(o =>
+if (disableAuth)
 {
-    o.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
-    o.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
-})
-.AddJwtBearer(o =>
+    builder.Services.AddAuthentication("Dev")
+        .AddScheme<AuthenticationSchemeOptions, DevAuthHandler>("Dev", options => { });
+}
+else
 {
-    o.TokenValidationParameters = new TokenValidationParameters
+    builder.Services.AddAuthentication(o =>
     {
-        ValidateIssuer = !string.IsNullOrWhiteSpace(issuer),
-        ValidateAudience = !string.IsNullOrWhiteSpace(audience),
-        ValidateLifetime = true,
-        ValidateIssuerSigningKey = true,
-        ValidIssuer = issuer,
-        ValidAudience = audience,
-        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(key!))
-    };
-});
+        o.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+        o.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+    })
+    .AddJwtBearer(o =>
+    {
+        o.TokenValidationParameters = new TokenValidationParameters
+        {
+            ValidateIssuer = !string.IsNullOrWhiteSpace(issuer),
+            ValidateAudience = !string.IsNullOrWhiteSpace(audience),
+            ValidateLifetime = true,
+            ValidateIssuerSigningKey = true,
+            ValidIssuer = issuer,
+            ValidAudience = audience,
+            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(key!))
+        };
+    });
+}
+
+builder.Services.AddAuthorization();
 
 // 2.4. Controllers, Swagger, CORS
 builder.Services.AddControllers();
@@ -111,4 +132,13 @@ app.UseCors();
 app.UseAuthentication();
 app.UseAuthorization();
 app.MapControllers();
+
+if (useInMemory && seedDemo)
+{
+    using var scope = app.Services.CreateScope();
+    var db = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+    db.Database.EnsureCreated();
+    DemoSeed.Run(db);
+}
+
 app.Run();
