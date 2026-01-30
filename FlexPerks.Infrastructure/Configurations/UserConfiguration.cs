@@ -12,13 +12,14 @@ namespace FlexPerks.Infrastructure.Configurations
             builder.HasKey(u => u.Id);
             builder.Property(u => u.Name).IsRequired().HasMaxLength(100);
             builder.Property(u => u.Email).IsRequired().HasMaxLength(150);
-            builder.HasIndex(u => u.Email).IsUnique();
             builder.Property(u => u.PasswordHash).IsRequired();
 
             builder.HasMany(u => u.Wallets)
                    .WithOne(w => w.User)
                    .HasForeignKey(w => w.UserId)
                    .OnDelete(DeleteBehavior.Cascade);
+
+            builder.HasIndex(u => u.Email).IsUnique();
         }
     }
 }

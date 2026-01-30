@@ -12,6 +12,11 @@ using Microsoft.OpenApi.Models;
 using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
+builder.Configuration
+    .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
+    .AddJsonFile($"appsettings.{builder.Environment.EnvironmentName}.json", optional: true, reloadOnChange: true)
+    .AddUserSecrets<Program>(optional: true)
+    .AddEnvironmentVariables();
 
 // 1. Configuration
 var configuration = builder.Configuration;
@@ -23,30 +28,37 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseSqlServer(configuration.GetConnectionString("DefaultConnection")));
 
 // 2.2. Application & Infrastructure services
-builder.Services.AddTransient(typeof(IAsyncRepository<>), typeof(GenericRepository<>));
-builder.Services.AddTransient<IUserRepository, UserRepository>();
-builder.Services.AddTransient<ICompanyRepository, CompanyRepository>();
-builder.Services.AddTransient<IBenefitCategoryRepository, BenefitCategoryRepository>();
-builder.Services.AddTransient<IPerksWalletRepository, PerksWalletRepository>();
-builder.Services.AddTransient<IPerkTransactionRepository, PerkTransactionRepository>();
+builder.Services.AddScoped(typeof(IAsyncRepository<>), typeof(GenericRepository<>));
+builder.Services.AddScoped<IUserRepository, UserRepository>();
+builder.Services.AddScoped<ICompanyRepository, CompanyRepository>();
+builder.Services.AddScoped<IBenefitCategoryRepository, BenefitCategoryRepository>();
+builder.Services.AddScoped<IPerksWalletRepository, PerksWalletRepository>();
+builder.Services.AddScoped<IPerkTransactionRepository, PerkTransactionRepository>();
+builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 
 // 2.3. Authentication (JWT)
-builder.Services.AddAuthentication(options =>
+
+var jwt = builder.Configuration.GetSection("Jwt");
+var key = jwt.GetValue<string>("Key");
+var issuer = jwt.GetValue<string>("Issuer");
+var audience = jwt.GetValue<string>("Audience");
+
+builder.Services.AddAuthentication(o =>
 {
-    options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
-    options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+    o.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+    o.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
 })
-.AddJwtBearer(options =>
+.AddJwtBearer(o =>
 {
-    options.TokenValidationParameters = new TokenValidationParameters
+    o.TokenValidationParameters = new TokenValidationParameters
     {
-        ValidateIssuer = true,
-        ValidateAudience = true,
+        ValidateIssuer = !string.IsNullOrWhiteSpace(issuer),
+        ValidateAudience = !string.IsNullOrWhiteSpace(audience),
         ValidateLifetime = true,
         ValidateIssuerSigningKey = true,
-        ValidIssuer = jwtSettings["Issuer"],
-        ValidAudience = jwtSettings["Audience"],
-        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtSettings["Key"]))
+        ValidIssuer = issuer,
+        ValidAudience = audience,
+        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(key!))
     };
 });
 
@@ -90,8 +102,11 @@ if (app.Environment.IsDevelopment())
         c.RoutePrefix = string.Empty; // opcional: Swagger UI em https://localhost:<port>/
     });
 }
+else
+{
+    app.UseHttpsRedirection();
+}
 
-app.UseHttpsRedirection();
 app.UseCors();
 app.UseAuthentication();
 app.UseAuthorization();

@@ -1,4 +1,5 @@
 ﻿using FlexPerks.Application.Interfaces;
+using FlexPerks.Application.Queries;
 using FlexPerks.Domain.Models;
 using FlexPerks.Infrastructure.Data;
 using Microsoft.EntityFrameworkCore;
@@ -12,7 +13,7 @@ namespace FlexPerks.Infrastructure.Repositories
         public async Task<IEnumerable<PerkTransaction>> ListByWalletId(int walletId)
         {
             return await _dbContext.PerkTransactions
-                .Where(t => t.WalletId == walletId)
+                .Where(PerkTransactionQueries.ByWalletId(walletId))
                 .ToListAsync();
         }
     }

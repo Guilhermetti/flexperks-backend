@@ -1,6 +1,20 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <ItemGroup>
+    <None Remove="appsettings.Development.json" />
+    <None Remove="appsettings.json" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Include="appsettings.Development.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="appsettings.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\FlexPerks.Application\FlexPerks.Application.csproj" />
     <ProjectReference Include="..\FlexPerks.Infrastructure\FlexPerks.Infrastructure.csproj" />
   </ItemGroup>
@@ -26,6 +40,8 @@
     <TargetFramework>net9.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
+	<OutputType>Exe</OutputType>
+	<UserSecretsId>0ab77c8d-d3e6-4bfb-b855-420c3aee6b3b</UserSecretsId>
   </PropertyGroup>
 
 </Project>
