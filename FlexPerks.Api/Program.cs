@@ -1,5 +1,9 @@
 ﻿using FlexPerks.Api.Auth;
 using FlexPerks.Application.Handlers.Auth;
+using FlexPerks.Application.Handlers.Categories;
+using FlexPerks.Application.Handlers.Transactions;
+using FlexPerks.Application.Handlers.Users;
+using FlexPerks.Application.Handlers.Wallets;
 using FlexPerks.Application.Interfaces;
 using FlexPerks.Application.Options;
 using FlexPerks.Infrastructure.Data;
@@ -54,6 +58,11 @@ builder.Services.AddScoped<IBenefitCategoryRepository, BenefitCategoryRepository
 builder.Services.AddScoped<IPerksWalletRepository, PerksWalletRepository>();
 builder.Services.AddScoped<IPerkTransactionRepository, PerkTransactionRepository>();
 builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
+
+builder.Services.AddScoped<CreateUserHandler>();
+builder.Services.AddScoped<CreateCategoryHandler>();
+builder.Services.AddScoped<CreateWalletHandler>();
+builder.Services.AddScoped<CreditDebitHandler>();
 
 // 2.3. Authentication (JWT)
 var jwt = builder.Configuration.GetSection("Jwt");

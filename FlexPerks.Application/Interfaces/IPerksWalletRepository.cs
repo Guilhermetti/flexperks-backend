@@ -5,5 +5,6 @@ namespace FlexPerks.Application.Interfaces
     public interface IPerksWalletRepository : IAsyncRepository<PerksWallet>
     {
         Task<IEnumerable<PerksWallet>> ListByUserId(int userId);
+        Task<PerksWallet?> GetByUserAndCategory(int userId, int categoryId);
     }
 }

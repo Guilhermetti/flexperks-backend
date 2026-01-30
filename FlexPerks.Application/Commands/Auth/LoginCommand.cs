@@ -3,7 +3,6 @@ using Flunt.Validations;
 
 namespace FlexPerks.Application.Commands.Auth
 {
-
     public class LoginCommand : Notifiable<Notification>
     {
         public string Email { get; set; } = string.Empty;

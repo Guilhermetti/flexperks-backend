@@ -17,7 +17,6 @@ namespace FlexPerks.Api.Controllers
         public async Task<IActionResult> Login([FromBody] LoginCommand cmd)
         {
             var result = await _login.Handle(cmd);
-
             if (!_login.IsValid)
                 return BadRequest(_login.Notifications);
 
