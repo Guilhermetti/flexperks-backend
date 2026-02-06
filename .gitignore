@@ -361,3 +361,44 @@ MigrationBackup/
 
 # Fody - auto-generated XML schema
 FodyWeavers.xsd
+
+# --------------------------
+# Complementos para este repo
+# --------------------------
+
+# Sistemas operacionais
+.DS_Store
+Thumbs.db
+
+# JetBrains Rider
+.idea/
+*.sln.iml
+
+# VS Code (ignore tudo, exceto configs úteis)
+.vscode/*
+!.vscode/settings.json
+!.vscode/extensions.json
+
+# Arquivos de ambiente / segredos locais
+.env
+.env.*
+appsettings.*.local.json
+appsettings.Local.json
+
+# Bancos locais/SQLite
+*.sqlite
+*.sqlite3
+*.db
+*.db-shm
+*.db-wal
+
+# Next.js / Front-end (quando aplicável)
+.next/
+out/
+.vercel/
+.turbo/
+
+# Testes / relatórios
+TestResults/
+coverage/
+coverage-*
