@@ -3,14 +3,14 @@ using FlexPerks.Application.Interfaces;
 using FlexPerks.Domain.Models;
 using Flunt.Notifications;
 
-namespace FlexPerks.Application.Handlers.Users
+namespace FlexPerks.Application.Handlers
 {
-    public class CreateUserHandler : Notifiable<Notification>
+    public class UserHandler : Notifiable<Notification>
     {
         private readonly IUserRepository _users;
         private readonly IUnitOfWork _uow;
 
-        public CreateUserHandler(
+        public UserHandler(
             IUserRepository users,
             IUnitOfWork uow)
         {
@@ -20,6 +20,7 @@ namespace FlexPerks.Application.Handlers.Users
 
         public async Task<int?> Handle(CreateUserCommand cmd)
         {
+            Clear();
             cmd.Validate();
             if (!cmd.IsValid)
             {
@@ -27,7 +28,7 @@ namespace FlexPerks.Application.Handlers.Users
                 return null;
             }
 
-            var exists = await _users.GetByEmail(cmd.Email);
+            var exists = await _users.GetByEmail(cmd.CompanyId, cmd.Email);
             if (exists != null)
             {
                 AddNotification("Email", "Já existe um usuário com este email");

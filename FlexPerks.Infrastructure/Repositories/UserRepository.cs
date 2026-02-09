@@ -10,10 +10,10 @@ namespace FlexPerks.Infrastructure.Repositories
     {
         public UserRepository(ApplicationDbContext dbContext) : base(dbContext) { }
 
-        public async Task<User?> GetByEmail(string email)
+        public async Task<User?> GetByEmail(int companyId, string email)
         {
             return await _dbContext.Users
-                .SingleOrDefaultAsync(UserQueries.ByEmail(email));
+                .SingleOrDefaultAsync(UserQueries.ByCompanyAndEmail(companyId, email));
         }
     }
 }

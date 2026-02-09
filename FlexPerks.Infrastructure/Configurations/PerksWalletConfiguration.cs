@@ -10,8 +10,7 @@ namespace FlexPerks.Infrastructure.Configurations
         {
             builder.ToTable("PerksWallets");
             builder.HasKey(w => w.Id);
-            builder.Property(w => w.Balance).IsRequired().HasColumnType("decimal(10,2)");
-
+            builder.Property(w => w.Balance).IsRequired().HasColumnType("decimal(18,2)");
             builder.HasIndex(w => new { w.UserId, w.CategoryId }).IsUnique();
         }
     }

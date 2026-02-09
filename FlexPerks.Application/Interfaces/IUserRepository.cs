@@ -4,6 +4,6 @@ namespace FlexPerks.Application.Interfaces
 {
     public interface IUserRepository : IAsyncRepository<User>
     {
-        Task<User?> GetByEmail(string email);
+        Task<User?> GetByEmail(int companyId, string email);
     }
 }

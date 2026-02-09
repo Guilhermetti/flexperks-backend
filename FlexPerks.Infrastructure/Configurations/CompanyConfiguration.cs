@@ -13,10 +13,17 @@ namespace FlexPerks.Infrastructure.Configurations
             builder.Property(c => c.Name).IsRequired().HasMaxLength(100);
             builder.Property(c => c.TaxId).IsRequired().HasMaxLength(50);
 
+            builder.HasIndex(c => c.TaxId).IsUnique();
+
             builder.HasMany(c => c.Users)
                 .WithOne(u => u.Company)
                 .HasForeignKey(u => u.CompanyId)
-                .OnDelete(DeleteBehavior.Cascade);
+                .OnDelete(DeleteBehavior.Restrict);
+
+            builder.HasMany(c => c.Employees)
+                .WithOne(e => e.Company)
+                .HasForeignKey(e => e.CompanyId)
+                .OnDelete(DeleteBehavior.Restrict);
         }
     }
 }

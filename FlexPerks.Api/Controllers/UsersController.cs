@@ -1,5 +1,5 @@
 ﻿using FlexPerks.Application.Commands.Users;
-using FlexPerks.Application.Handlers.Users;
+using FlexPerks.Application.Handlers;
 using FlexPerks.Application.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -11,11 +11,11 @@ namespace FlexPerks.Api.Controllers
     public class UsersController : ControllerBase
     {
         private readonly IUserRepository _users;
-        private readonly CreateUserHandler _create;
+        private readonly UserHandler _create;
 
         public UsersController(
             IUserRepository users,
-            CreateUserHandler create)
+            UserHandler create)
         {
             _users = users;
             _create = create;

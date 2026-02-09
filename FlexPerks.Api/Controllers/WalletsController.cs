@@ -1,5 +1,5 @@
 ﻿using FlexPerks.Application.Commands.Wallets;
-using FlexPerks.Application.Handlers.Wallets;
+using FlexPerks.Application.Handlers;
 using FlexPerks.Application.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -12,11 +12,11 @@ namespace FlexPerks.Api.Controllers
     public class WalletsController : ControllerBase
     {
         private readonly IPerksWalletRepository _repo;
-        private readonly CreateWalletHandler _create;
+        private readonly WalletHandler _create;
 
         public WalletsController(
             IPerksWalletRepository repo,
-            CreateWalletHandler create)
+            WalletHandler create)
         {
             _repo = repo;
             _create = create;

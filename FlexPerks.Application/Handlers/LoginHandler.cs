@@ -3,7 +3,7 @@ using FlexPerks.Application.Interfaces;
 using FlexPerks.Application.Results.Auth;
 using Flunt.Notifications;
 
-namespace FlexPerks.Application.Handlers.Auth
+namespace FlexPerks.Application.Handlers
 {
     public class LoginHandler : Notifiable<Notification>
     {
@@ -20,6 +20,7 @@ namespace FlexPerks.Application.Handlers.Auth
 
         public async Task<LoginResult?> Handle(LoginCommand cmd)
         {
+            Clear();
             cmd.Validate();
             if (!cmd.IsValid)
             {
@@ -27,7 +28,7 @@ namespace FlexPerks.Application.Handlers.Auth
                 return null;
             }
 
-            var user = await _users.GetByEmail(cmd.Email);
+            var user = await _users.GetByEmail(cmd.CompanyId, cmd.Email);
             if (user is null || !BCrypt.Net.BCrypt.Verify(cmd.Password, user.PasswordHash))
             {
                 AddNotification("Credentials", "Usuário ou senha inválidos");

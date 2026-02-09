@@ -5,7 +5,7 @@ namespace FlexPerks.Application.Queries
 {
     public static class UserQueries
     {
-        public static Expression<Func<User, bool>> ByEmail(string email)
-            => u => u.Email == email;
+        public static Expression<Func<User, bool>> ByCompanyAndEmail(int companyId, string email)
+            => u => u.CompanyId == companyId && u.Email == email;
     }
 }

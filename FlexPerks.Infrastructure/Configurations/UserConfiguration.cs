@@ -19,7 +19,7 @@ namespace FlexPerks.Infrastructure.Configurations
                    .HasForeignKey(w => w.UserId)
                    .OnDelete(DeleteBehavior.Cascade);
 
-            builder.HasIndex(u => u.Email).IsUnique();
+            builder.HasIndex(u => new { u.CompanyId, u.Email }).IsUnique();
         }
     }
 }

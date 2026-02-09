@@ -15,6 +15,8 @@ namespace FlexPerks.Infrastructure.Data
         public DbSet<BenefitCategory> BenefitCategories { get; set; } = null!;
         public DbSet<PerksWallet> PerksWallets { get; set; } = null!;
         public DbSet<PerkTransaction> PerkTransactions { get; set; } = null!;
+        public DbSet<Employee> Employees { get; set; } = null!;
+        public DbSet<TimeClockEntry> TimeClockEntries { get; set; } = null!;
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {

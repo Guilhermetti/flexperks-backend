@@ -21,9 +21,12 @@ namespace FlexPerks.Infrastructure.Security
                 new(JwtRegisteredClaimNames.Sub, user.Id.ToString()),
                 new(JwtRegisteredClaimNames.Email, user.Email),
                 new(JwtRegisteredClaimNames.UniqueName, user.Name),
+
                 new(ClaimTypes.NameIdentifier, user.Id.ToString()),
                 new(ClaimTypes.Name, user.Name),
-                new(ClaimTypes.Email, user.Email)
+                new(ClaimTypes.Email, user.Email),
+
+                new("companyId", user.CompanyId.ToString())
             };
 
             if (extraClaims != null)
@@ -45,6 +48,7 @@ namespace FlexPerks.Infrastructure.Security
             return new JwtSecurityTokenHandler().WriteToken(token);
         }
 
-        public DateTime GetExpiration() => DateTime.UtcNow.AddMinutes(_opt.ExpiresMinutes <= 0 ? 60 : _opt.ExpiresMinutes);
+        public DateTime GetExpiration()
+            => DateTime.UtcNow.AddMinutes(_opt.ExpiresMinutes <= 0 ? 60 : _opt.ExpiresMinutes);
     }
 }

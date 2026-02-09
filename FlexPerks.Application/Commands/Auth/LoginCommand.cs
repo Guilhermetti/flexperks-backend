@@ -5,12 +5,14 @@ namespace FlexPerks.Application.Commands.Auth
 {
     public class LoginCommand : Notifiable<Notification>
     {
+        public int CompanyId { get; set; }
         public string Email { get; set; } = string.Empty;
         public string Password { get; set; } = string.Empty;
 
         public void Validate()
         {
             AddNotifications(new Contract<LoginCommand>()
+                .IsGreaterThan(CompanyId, 0, nameof(CompanyId), "Empresa inválida")
                 .IsNotNullOrWhiteSpace(Email, nameof(Email), "Email é obrigatório")
                 .IsEmail(Email, nameof(Email), "Email inválido")
                 .IsNotNullOrWhiteSpace(Password, nameof(Password), "Senha é obrigatória")

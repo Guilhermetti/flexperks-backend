@@ -1,5 +1,5 @@
 ﻿using FlexPerks.Application.Commands.Transactions;
-using FlexPerks.Application.Handlers.Transactions;
+using FlexPerks.Application.Handlers;
 using FlexPerks.Application.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;

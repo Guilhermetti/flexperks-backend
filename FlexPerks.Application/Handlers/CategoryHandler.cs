@@ -3,13 +3,14 @@ using FlexPerks.Application.Interfaces;
 using FlexPerks.Domain.Models;
 using Flunt.Notifications;
 
-namespace FlexPerks.Application.Handlers.Categories
+namespace FlexPerks.Application.Handlers
 {
-    public class CreateCategoryHandler : Notifiable<Notification>
+    public class CategoryHandler : Notifiable<Notification>
     {
         private readonly IBenefitCategoryRepository _categories;
         private readonly IUnitOfWork _uow;
-        public CreateCategoryHandler(
+
+        public CategoryHandler(
             IBenefitCategoryRepository categories,
             IUnitOfWork uow)
         {
@@ -19,6 +20,7 @@ namespace FlexPerks.Application.Handlers.Categories
 
         public async Task<int?> Handle(CreateCategoryCommand cmd)
         {
+            Clear();
             cmd.Validate();
             if (!cmd.IsValid)
             {

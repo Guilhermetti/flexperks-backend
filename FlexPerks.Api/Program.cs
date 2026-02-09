@@ -1,9 +1,5 @@
 ﻿using FlexPerks.Api.Auth;
-using FlexPerks.Application.Handlers.Auth;
-using FlexPerks.Application.Handlers.Categories;
-using FlexPerks.Application.Handlers.Transactions;
-using FlexPerks.Application.Handlers.Users;
-using FlexPerks.Application.Handlers.Wallets;
+using FlexPerks.Application.Handlers;
 using FlexPerks.Application.Interfaces;
 using FlexPerks.Application.Options;
 using FlexPerks.Infrastructure.Data;
@@ -57,12 +53,16 @@ builder.Services.AddScoped<ICompanyRepository, CompanyRepository>();
 builder.Services.AddScoped<IBenefitCategoryRepository, BenefitCategoryRepository>();
 builder.Services.AddScoped<IPerksWalletRepository, PerksWalletRepository>();
 builder.Services.AddScoped<IPerkTransactionRepository, PerkTransactionRepository>();
+builder.Services.AddScoped<IEmployeeRepository, EmployeeRepository>();
+builder.Services.AddScoped<ITimeClockEntryRepository, TimeClockEntryRepository>();
 builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 
-builder.Services.AddScoped<CreateUserHandler>();
-builder.Services.AddScoped<CreateCategoryHandler>();
-builder.Services.AddScoped<CreateWalletHandler>();
+builder.Services.AddScoped<UserHandler>();
+builder.Services.AddScoped<CategoryHandler>();
+builder.Services.AddScoped<WalletHandler>();
 builder.Services.AddScoped<CreditDebitHandler>();
+builder.Services.AddScoped<EmployeeHandler>();
+builder.Services.AddScoped<TimeClockEntryHandler>();
 
 // 2.3. Authentication (JWT)
 var jwt = builder.Configuration.GetSection("Jwt");

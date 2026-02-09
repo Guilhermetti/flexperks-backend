@@ -3,7 +3,7 @@ using FlexPerks.Application.Interfaces;
 using FlexPerks.Domain.Models;
 using Flunt.Notifications;
 
-namespace FlexPerks.Application.Handlers.Transactions
+namespace FlexPerks.Application.Handlers
 {
     public class CreditDebitHandler : Notifiable<Notification>
     {
@@ -23,6 +23,7 @@ namespace FlexPerks.Application.Handlers.Transactions
 
         public async Task<int?> Handle(CreditDebitCommand cmd)
         {
+            Clear();
             cmd.Validate();
             if (!cmd.IsValid)
             {

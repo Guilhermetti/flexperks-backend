@@ -1,5 +1,5 @@
 ﻿using FlexPerks.Application.Commands.Auth;
-using FlexPerks.Application.Handlers.Auth;
+using FlexPerks.Application.Handlers;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 

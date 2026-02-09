@@ -1,5 +1,5 @@
 ﻿using FlexPerks.Application.Commands.Categories;
-using FlexPerks.Application.Handlers.Categories;
+using FlexPerks.Application.Handlers;
 using FlexPerks.Application.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -12,11 +12,11 @@ namespace FlexPerks.Api.Controllers
     public class CategoriesController : ControllerBase
     {
         private readonly IBenefitCategoryRepository _repo;
-        private readonly CreateCategoryHandler _create;
+        private readonly CategoryHandler _create;
 
         public CategoriesController(
             IBenefitCategoryRepository repo,
-            CreateCategoryHandler create)
+            CategoryHandler create)
         {
             _repo = repo;
             _create = create;

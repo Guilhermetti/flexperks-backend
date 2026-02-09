@@ -3,14 +3,14 @@ using FlexPerks.Application.Interfaces;
 using FlexPerks.Domain.Models;
 using Flunt.Notifications;
 
-namespace FlexPerks.Application.Handlers.Wallets
+namespace FlexPerks.Application.Handlers
 {
-    public class CreateWalletHandler : Notifiable<Notification>
+    public class WalletHandler : Notifiable<Notification>
     {
         private readonly IPerksWalletRepository _wallets;
         private readonly IUnitOfWork _uow;
 
-        public CreateWalletHandler(
+        public WalletHandler(
             IPerksWalletRepository wallets,
             IUnitOfWork uow)
         {
@@ -20,6 +20,7 @@ namespace FlexPerks.Application.Handlers.Wallets
 
         public async Task<int?> Handle(CreateWalletCommand cmd)
         {
+            Clear();
             cmd.Validate();
             if (!cmd.IsValid)
             {
