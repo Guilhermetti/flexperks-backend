@@ -1,188 +1,187 @@
-# FlexPerks API — Benefícios e Despesas Corporativas
+# FlexPerks API  
+### ERP de RH com módulo de Benefícios (secundário)
 
-Este repositório contém a API do FlexPerks, um projeto pessoal com direção de produto. O objetivo é oferecer uma solução completa para gestão e despesas corporativas, contemplando dois perfis principais:
-
-- **Admin/Empresa (RH/Financeiro)**: políticas, orçamentos, conciliação, relatórios, integrações.
-- **Colaborador**: carteiras por categoria, extratos, transações de crédito/débito e consumo.
-
-Status: MVP em construção, com endpoints mínimos estáveis e trilha de evolução planejada.
+O **FlexPerks** é uma API backend voltada para **gestão de pessoas**, evoluída para atuar como um **ERP de RH**, com foco em controle, rastreabilidade e governança da vida funcional do colaborador.  
+O módulo de **Benefícios** permanece disponível como funcionalidade **secundária e opcional**.
 
 ---
 
-## Objetivos do projeto
+## 🎯 Visão do Produto
 
-- Consolidar boas práticas (Clean Code, Architecture, DDD, SOLID, CQRS nas escritas, validações com Flunt).
-- Entregar uma base segura e extensível (JWT, papéis, logs/auditoria).
-- Visão administrativa robusta.
+O sistema foi projetado para atender empresas que precisam de:
+- Controle confiável de jornada e ponto  
+- Gestão clara de colaboradores e hierarquia  
+- Base sólida para processos de RH e compliance  
+- Evolução gradual sem reescrita de arquitetura  
 
-## Escopo funcional (visão por perfil)
-
-Admin/Empresa (RH/Financeiro)
-- Políticas de benefícios por centro de custo/nível/cargo.
-- Orçamentos e ciclos (ex.: mensal, trimestral), alocação de saldos e regras fiscais.
-- Gestão de colaboradores (onboarding/offboarding), importação em lote.
-- Relatórios gerenciais (uso por categoria, evolução de custos, centros de custo).
-- Conciliação e fechamento (export para ERP/folha, arquivos padrões).
-- Integrações (ERP/folha, provedores de pagamento/marketplace), webhooks.
-- Auditoria e trilhas de aprovação (futuro).
-
-Colaborador
-- Carteiras por categoria (alimentação, transporte, cultura etc.).
-- Transações (crédito/débito) com validação de saldo.
-- Extratos e indicadores de uso.
-- Preferências e notificações (futuro).
-
-## Arquitetura
-
-- **Camadas**: Domain, Application, Infrastructure, API (Clean Architecture).
-- **Persistência**: EF Core 9 (SQL Server). Modo desenvolvimento com InMemory.
-- **Validações**: Flunt (contracts) + handlers para comandos de escrita (CQRS).
-- **Autenticação**: JWT Bearer; opção de **DevAuth** para desenvolvimento.
-- **Documentação**: Swagger/OpenAPI.
-- **Feature Flags (dev)**: `UseInMemoryDb`, `DisableAuth`, `SeedDemoData`.
-
-### Estrutura
-
-```text
-FlexPerks/
-├── FlexPerks.Domain
-├── FlexPerks.Application
-├── FlexPerks.Infrastructure
-└── FlexPerks.Api
-```
-
-### Entidades base (MVP)
-
-- Company, User
-- BenefitCategory
-- PerksWallet (saldo por usuário + categoria)
-- PerkTransaction (Credit/Debit, occurredAt)
-
-### Índices e regras
-
-- E-mail de `User` único.
-- Carteira única por `(UserId, CategoryId)`.
-- Débito não pode exceder saldo.
+**Status:** MVP em construção, com base estável e roadmap definido.
 
 ---
 
-## Endpoints mínimos atuais
+## 👥 Perfis de Acesso
+
+### Admin / Empresa (RH / Gestão)
+- Gestão de empresas e colaboradores (onboarding/offboarding)
+- Controle e auditoria de ponto
+- Gestão de ocorrências (faltas, atrasos, advertências)
+- Gestão de férias, folgas e banco de horas
+- Gestão documental (holerites, contratos, atestados)
+- Relatórios e indicadores gerenciais
+- Trilhas de aprovação e auditoria
+
+### Gestor
+- Acompanhamento do time
+- Aprovação de ajustes e ocorrências
+- Indicadores por período e equipe
+
+### Colaborador
+- Espelho de ponto
+- Histórico de batidas
+- Solicitação de ajustes
+- Acesso a documentos
+
+### Benefícios (módulo secundário)
+- Categorias de benefício
+- Carteiras por categoria
+- Transações simples (crédito / débito)
+
+---
+
+## 🧱 Arquitetura
+
+- **Clean Architecture**
+- **DDD + SOLID**
+- **CQRS nas operações de escrita**
+- **Validações com Flunt**
+- **Autenticação JWT**
+- **Multiempresa (tenant-aware)**
+
+### Camadas
+- Domain  
+- Application  
+- Infrastructure  
+- API  
+
+### Persistência
+- EF Core 9  
+- SQL Server  
+- InMemory para desenvolvimento  
+
+### Segurança
+- JWT Bearer
+- Claim `companyId` para isolamento de tenant
+- DevAuth opcional para desenvolvimento
+
+### Documentação
+- Swagger / OpenAPI
+
+### Feature Flags (dev)
+- `UseInMemoryDb`
+- `DisableAuth`
+- `SeedDemoData`
+
+---
+
+## 📁 Estrutura do Projeto
+
+FlexPerks/  
+├── FlexPerks.Domain  
+├── FlexPerks.Application  
+├── FlexPerks.Infrastructure  
+└── FlexPerks.Api  
+
+---
+
+## 📦 Entidades Base (MVP)
+
+### Core RH
+- **Company**
+- **Employee** (colaborador + hierarquia por manager)
+- **TimeClockEntry** (batidas de ponto em UTC)
+
+### Acesso
+- **User** (conta de acesso vinculada à Company)
+
+### Benefícios (secundário)
+- **BenefitCategory**
+- **PerksWallet** (saldo por usuário e categoria)
+- **PerkTransaction** (Credit / Debit, occurredAt)
+
+---
+
+## 🔐 Índices e Regras Principais
+
+- `Company.TaxId` único
+- `User.Email` único por `(CompanyId, Email)`
+- `Employee.Email` único por `(CompanyId, Email)`
+- `TimeClockEntry` sem duplicidade por  
+  `(CompanyId, EmployeeId, TimestampUtc, Type)`
+- `PerksWallet` única por `(UserId, CategoryId)`
+- Validações de tenant e integridade aplicadas nos handlers
+
+---
+
+## 🔌 Endpoints Atuais (MVP)
 
 ### Auth
-
-- `POST /api/auth/login` → retorna JWT
+- `POST /api/auth/login`
 
 ### Users
-
 - `GET /api/users/{id}`
-- `POST /api/users` (cria usuário com hash de senha)
+- `POST /api/users`
 
-### Categories
+### Employees
+- `GET /api/employees/{id}`
+- `POST /api/employees`
 
+### TimeClock
+- `POST /api/timeclock`
+- `GET /api/timeclock/employee/{employeeId}`  
+  `?companyId=&fromUtc=&toUtc=`
+
+### Benefícios (secundário)
 - `GET /api/categories`
 - `POST /api/categories`
-
-### Wallets
-
 - `GET /api/wallets?userId=`
 - `POST /api/wallets`
-
-### Transactions
-
 - `POST /api/transactions/credit`
 - `POST /api/transactions/debit`
 - `GET /api/transactions?walletId=`
 
-**Padrão de erros:** `400` com notificações do Flunt quando inválido.
+**Padrão de erro:**  
+HTTP `400` com notificações do Flunt.
 
 ---
 
-## Setup e execução
+## ▶️ Setup e Execução
 
 ### Requisitos
-
 - .NET SDK 9
-- SQL Server (opcional em dev)
+- SQL Server (opcional)
 
-### Configuração
+### Execução
+- `dotnet build`
+- `dotnet run --project ./FlexPerks.Api`
 
-1. `appsettings.json` e `appsettings.Development.json` na raiz do projeto `FlexPerks.Api`.
-2. Segredos JWT (recomendado via User Secrets):
-
-```bash
-dotnet user-secrets init -p ./FlexPerks.Api
-dotnet user-secrets set -p ./FlexPerks.Api "Jwt:Key" "sua-chave-com-32+chars"
-dotnet user-secrets set -p ./FlexPerks.Api "Jwt:Issuer" "FlexPerks.Auth"
-dotnet user-secrets set -p ./FlexPerks.Api "Jwt:Audience" "FlexPerks.API"
-```
-
-### Feature Flags (desenvolvimento)
-
-```json
-{
-  "FeatureFlags": {
-    "UseInMemoryDb": true,
-    "DisableAuth": true,
-    "SeedDemoData": true
-  }
-}
-```
-
-### Executar
-
-```bash
-dotnet build
-dotnet run --project ./FlexPerks.Api
-```
-
-Swagger: `http://localhost:<porta>/`
+Swagger disponível na raiz da aplicação.
 
 ---
 
-## Banco de dados (SQL Server)
+## 🗺️ Roadmap
 
-```bash
-dotnet tool install --global dotnet-ef
-dotnet ef migrations add InitialCreate -p FlexPerks.Infrastructure -s FlexPerks.Api
-dotnet ef database update -p FlexPerks.Infrastructure -s FlexPerks.Api
-```
-
----
-
-## Roadmap de evolução
-
-### Admin/Empresa
-
-- Políticas de benefício por grupo/cargo com exceções.
-- Orçamentos e ciclos com travas e reaberturas controladas.
-- Relatórios de uso e custos por período/centro de custo.
-- Conciliação e export para ERP/folha (formatos parametrizáveis).
-- Perfis e permissões (Admin, RH, Financeiro, Auditor).
-
-### Colaborador
-
-- Histórico detalhado de extratos, filtros e export.
-- Notificações e alertas de saldo/limite.
-- Catálogo/marketplace (integração externa).
-
-### Plataforma
-
-- Observabilidade (logging estruturado, tracing).
-- Idempotência e mensagens (para integrações assíncronas).
-- Versionamento da API e política de depreciação.
-- Segurança adicional (rotinas de rotação de chaves, limites de rate).
+- Ajustes e aprovações de ponto
+- Espelho de ponto consolidado
+- Faltas, atrasos e advertências
+- Banco de horas e horas extras
+- Férias e folgas
+- Documentos e holerites
+- Relatórios avançados
+- Perfis e permissões (CEO, RH, Gestor, Colaborador)
+- Auditoria completa
 
 ---
 
-## Padrões e qualidade
+## 📄 Licença
 
-- Commits em **Conventional Commits**.
-- Migrations versionadas.
-- `appsettings` sem segredos; segredos via **User Secrets**.
-- Testes: unitários no Application; integração com InMemory (roadmap).
-
----
-
-## Licença
-
-A definir (ex.: MIT). Enquanto não definido, “All rights reserved”.
+A definir (ex.: MIT).  
+Enquanto não definido: **All rights reserved**.
